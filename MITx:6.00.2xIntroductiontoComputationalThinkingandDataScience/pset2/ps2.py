@@ -55,7 +55,6 @@ class Position(object):
     def __str__(self):  
         return "(%0.2f, %0.2f)" % (self.x, self.y)
 
-
 # === Problem 1
 class RectangularRoom(object):
     """
@@ -74,7 +73,11 @@ class RectangularRoom(object):
         width: an integer > 0
         height: an integer > 0
         """
-        raise NotImplementedError
+        self.width = width;
+        self.height = height;
+        self.tiles=[]
+        for i in range(width):
+            self.tiles.append([0] * height)
     
     def cleanTileAtPosition(self, pos):
         """
@@ -84,7 +87,11 @@ class RectangularRoom(object):
 
         pos: a Position
         """
-        raise NotImplementedError
+        x = math.floor(pos.getX());
+        y = math.floor(pos.getY());
+        if not(self.isTileCleaned(x,y)):
+            self.tiles[x][y] = 1 ;
+                
 
     def isTileCleaned(self, m, n):
         """
@@ -96,7 +103,7 @@ class RectangularRoom(object):
         n: an integer
         returns: True if (m, n) is cleaned, False otherwise
         """
-        raise NotImplementedError
+        return self.tiles[m][n]==1;
     
     def getNumTiles(self):
         """
@@ -104,7 +111,7 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        raise NotImplementedError
+        return self.width*self.height;
 
     def getNumCleanedTiles(self):
         """
@@ -112,7 +119,12 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        raise NotImplementedError
+        compt = 0;
+        for i in range(self.width) :
+            for j in range(self.height):
+                if self.tiles[i][j]==1:
+                    compt+=1;
+        return compt;
 
     def getRandomPosition(self):
         """
@@ -120,7 +132,7 @@ class RectangularRoom(object):
 
         returns: a Position object.
         """
-        raise NotImplementedError
+        return Position(random.randint(0,self.width - 1),random.randint(0,self.height-1));
 
     def isPositionInRoom(self, pos):
         """
@@ -129,7 +141,10 @@ class RectangularRoom(object):
         pos: a Position object.
         returns: True if pos is in the room, False otherwise.
         """
-        raise NotImplementedError
+        if pos.x >= 0 and pos.x < self.width :
+            if pos.y>=0 and pos.y < self.height:
+                return True;
+        return False;
 
 
 # === Problem 2
@@ -152,7 +167,14 @@ class Robot(object):
         room:  a RectangularRoom object.
         speed: a float (speed > 0)
         """
-        raise NotImplementedError
+        self.position = room.getRandomPosition();
+        room.cleanTileAtPosition(self.position);
+        self.room = room;
+        self.direction = random.randint(0,360);
+        if (speed >0):
+        	self.speed = float(speed);
+        else:
+        	return ValueError("speed must be positive");
 
     def getRobotPosition(self):
         """
@@ -160,7 +182,7 @@ class Robot(object):
 
         returns: a Position object giving the robot's position.
         """
-        raise NotImplementedError
+        return self.position ;
     
     def getRobotDirection(self):
         """
@@ -169,7 +191,12 @@ class Robot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        raise NotImplementedError
+        return self.direction ;
+    def getRobotRoom(self):
+        """
+        Return the room of the robot.
+        """
+        return self.room ;
 
     def setRobotPosition(self, position):
         """
@@ -177,7 +204,7 @@ class Robot(object):
 
         position: a Position object.
         """
-        raise NotImplementedError
+        self.position = position ;
 
     def setRobotDirection(self, direction):
         """
@@ -185,7 +212,7 @@ class Robot(object):
 
         direction: integer representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction ;
 
     def updatePositionAndClean(self):
         """
@@ -213,11 +240,19 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        done = False ;
+        while (done==False):
+        	newPosition = self.getRobotPosition().getNewPosition(self.getRobotDirection(),self.speed);
+	        if (self.room.isPositionInRoom(newPosition)):
+	        		self.setRobotPosition(newPosition) ;
+	        		self.getRobotRoom().cleanTileAtPosition(self.getRobotPosition());
+	        		done = True ;
+	        else:
+	        	self.setRobotDirection(random.randint(0,360));
 
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-##testRobotMovement(StandardRobot, RectangularRoom)
+testRobotMovement(StandardRobot, RectangularRoom)
 
 
 # === Problem 4
