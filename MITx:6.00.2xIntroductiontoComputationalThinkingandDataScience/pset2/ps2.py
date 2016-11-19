@@ -295,7 +295,7 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
 
 
 # Uncomment this line to see how much your simulation takes on average
-print(runSimulation(5, 1.0, 20, 20, 0.6, 30, StandardRobot))
+#print(runSimulation(5, 1.0, 20, 20, 0.6, 30, StandardRobot))
 
 
 # === Problem 5
@@ -311,7 +311,15 @@ class RandomWalkRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+       	done = False ;
+        while (done==False):
+        	newDirection = random.randint(0,360);
+        	newPosition = self.getRobotPosition().getNewPosition(newDirection,self.speed);
+	        if (self.room.isPositionInRoom(newPosition)):
+	        		self.setRobotPosition(newPosition) ;
+	        		self.setRobotDirection(newDirection);
+	        		self.getRobotRoom().cleanTileAtPosition(self.getRobotPosition());
+	        		done = True ;
 
 
 def showPlot1(title, x_label, y_label):
@@ -364,12 +372,12 @@ def showPlot2(title, x_label, y_label):
 # 1) Write a function call to showPlot1 that generates an appropriately-labeled
 #     plot.
 #
-#       (... your call here ...)
+showPlot1("Time it takes 1-10 robots to clean 80% of a room",'Number of robots ','Time-steps')
 #
 
 #
 # 2) Write a function call to showPlot2 that generates an appropriately-labeled
 #     plot.
 #
-#       (... your call here ...)
+showPlot2("Time it takes 2 robots to clean 80% of variously shape rooms",'Aspects Ratio','Time-steps')
 #
